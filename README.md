@@ -302,6 +302,19 @@ npx prisma studio
 
 ---
 
+## Deployment
+
+Platform: Render
+
+Backend URL:
+https://class-booking-system-fsic.onrender.com/
+
+Swagger Documentation:
+https://class-booking-system-fsic.onrender.com/api
+
+Database:
+Render PostgreSQL
+
 ## API Documentation
 
 Swagger UI:
