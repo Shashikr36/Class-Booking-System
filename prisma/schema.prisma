@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Teacher {
+  id         Int        @id @default(autoincrement())
+  name       String
+  email      String     @unique
+  password   String     @default("temp_password")
+  timezone   String
+
+  offerings  Offering[]
+
+  createdAt  DateTime   @default(now())
+}
+
+model Parent {
+  id         Int        @id @default(autoincrement())
+  name       String
+  email      String     @unique
+  password   String     @default("temp_password")
+  timezone   String
+
+  bookings   Booking[]
+
+  createdAt  DateTime   @default(now())
+}
+
+model Course {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+
+  offerings   Offering[]
+
+  createdAt   DateTime   @default(now())
+}
+
+model Offering {
+  id          Int        @id @default(autoincrement())
+
+  name        String
+  timezone    String
+
+  courseId    Int
+  teacherId   Int
+
+  course       Course    @relation(fields: [courseId], references: [id])
+  teacher      Teacher   @relation(fields: [teacherId], references: [id])
+
+  sessions     Session[]
+  bookings     Booking[]
+
+  createdAt    DateTime  @default(now())
+}
+
+// model Session {
+//   id            Int       @id @default(autoincrement())
+
+//   offeringId    Int
+
+//   startTimeUtc  DateTime
+//   endTimeUtc    DateTime
+
+//   offering       Offering @relation(fields: [offeringId], references: [id])
+
+//   createdAt      DateTime @default(now())
+// }
+model Session {
+
+  id             Int       @id @default(autoincrement())
+
+  offeringId     Int
+
+  startTimeUtc   DateTime
+  endTimeUtc     DateTime
+
+  offering        Offering @relation(fields: [offeringId], references: [id])
+
+  createdAt       DateTime @default(now())
+
+  @@index([offeringId])
+  @@index([startTimeUtc])
+}
+
+model Booking {
+  id            Int       @id @default(autoincrement())
+
+  parentId      Int
+  offeringId    Int
+
+  status        String    @default("BOOKED")
+
+  parent        Parent    @relation(fields: [parentId], references: [id])
+  offering      Offering  @relation(fields: [offeringId], references: [id])
+
+  createdAt     DateTime  @default(now())
+
+  @@unique([parentId, offeringId])
+}
